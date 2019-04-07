@@ -12,7 +12,6 @@ function getJSONInput(callback) {
   var button = document.querySelector(".migration button");
   button.onclick = function() {
     var data = document.querySelector(".migration textarea").value;
-    console.log(data, '>>>>');
     try {
       var json = JSON.parse(data);
       callback(json);
@@ -27,19 +26,23 @@ function getJSONInput(callback) {
 
 function getTableRows(json) {
   const { config, pageScraping, domainEntityProperties } = json;
+  console.log(pageScraping.pageElements,  '>>>');
   const { campaigns } = config;
+
   const externalPageElements = Object.values(pageScraping.pageElements).filter(
     ele => ele.type === "ExternalValue"
   );
   
   return externalPageElements.map(ele => {
-    const { id, name, type, pageTypeName } = ele;
+    console.log(ele);
+    const { id, name, type, pageTypeName, dataType } = ele;
     const depNames = getDEPNames(domainEntityProperties, id);
     const campRulesIdName = returnCampRulesIdName(campaigns);
     const campaignIds = checkCampaignForDEP(depNames, campRulesIdName); 
     return {
       pageTypeName,
       name,
+      dataType,
       type,
       id,
       depNames,
@@ -115,6 +118,10 @@ function depTable(json) {
         type: "text"
       },
       {
+        data: "dataType",
+        type: "text"
+      },
+      {
         data: "type",
         type: "text"
       }
@@ -127,6 +134,7 @@ function depTable(json) {
       "id",
       "name",
       "pageTypeName",
+      "dataType",
       "type"
     ],
     columnSorting: {
